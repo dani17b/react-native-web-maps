@@ -1,5 +1,5 @@
 {
-  "name": "@blueeast/react-native-web-maps",
+  "name": "react-native-web-maps",
   "version": "0.1.0",
   "description": "React for Web implementation of react-native-maps",
   "main": "dist/index.js",
