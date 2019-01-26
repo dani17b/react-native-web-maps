@@ -10,7 +10,15 @@ const GoogleMapContainer = withGoogleMap(props => <GoogleMap {...props} ref={pro
 class MapView extends Component {
   constructor(props) {
     super(props);
-    this.state = { center: { lat: typeof props.region != "undefined" ? props.region.latitude : 0, lng: typeof props.region != "undefined" ? props.region.longitude : 0 } };
+
+    let region = typeof this.props.region != "undefined" ? this.props.region : this.props.initialRegion; 
+
+    this.state = { 
+      center: { 
+        lat: typeof region != "undefined" ? region.latitude : 0, 
+        lng: typeof region != "undefined" ? region.longitude : 0 
+      }
+    };
   }
 
   handleMapMounted = map => (this.map = map);
@@ -20,6 +28,40 @@ class MapView extends Component {
     !!this.props.onRegionChangeComplete &&
       this.props.onRegionChangeComplete({ latitude: center.lat(), longitude: center.lng() });
   };
+
+  getZoom() {
+    if(typeof this.state.zoom != "undefined"){
+      return this.state.zoom;
+    }
+
+    if(typeof this.props.zoom != "undefined"){
+      return this.props.zoom;
+    }
+
+    let region = typeof this.props.region != "undefined" ? this.props.region : this.props.initialRegion;  
+
+    if(typeof region != "undefined" && typeof region.latitudeDelta != "undefined" && typeof region.longitudeDelta != "undefined"){
+      let latitudeDelta = region.latitudeDelta;
+      let longitudeDelta = region.longitudeDelta;
+      
+      let zoomIndex = latitudeDelta * longitudeDelta;
+      let zoom = 17 - (Math.log10((zoomIndex * 1800) * 1000));
+  
+      return zoom;
+    }
+
+    return 15;
+  }
+
+  animateToCoordinate(coordinates){
+    this.setState({
+      center : {
+        lat : coordinates.latitude,
+        lng : coordinates.longitude
+      },
+      zoom : 24
+    });
+  }
 
   render() {
     const { style } = this.props;
@@ -38,7 +80,7 @@ class MapView extends Component {
           center={this.state.center}
           onDragStart={!!this.props.onRegionChange && this.props.onRegionChange}
           onDragEnd={this.onDragEnd}
-          defaultZoom={15}
+          defaultZoom={this.getZoom()}
           onClick={this.props.onPress}
         >
           {this.props.children}
