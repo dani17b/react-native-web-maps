@@ -22,12 +22,14 @@ class MapViewMarker extends Component {
     if(this.props.children){
       let _this = this;
       setTimeout(function(){
-        _this.setState({
-          labelCenterPoint : {
-            x : _this.makerWithLabelChild.current.offsetWidth / 2,
-            y : _this.makerWithLabelChild.current.offsetHeight / 2
-          }
-        })
+        if(_this.makerWithLabelChild.current != null){
+          _this.setState({
+            labelCenterPoint : {
+              x : _this.makerWithLabelChild.current.offsetWidth / 2,
+              y : _this.makerWithLabelChild.current.offsetHeight / 2
+            }
+          })
+        }
       }, 300);
     }
   }
